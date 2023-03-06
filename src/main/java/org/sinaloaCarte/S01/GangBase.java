@@ -2,6 +2,8 @@ package org.sinaloaCarte.S01;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.sinaloaCarte.utils.NumberToWords;
+import org.sinaloaCarte.utils.WordToNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,34 +14,47 @@ public class GangBase extends Subscriber{
     private String publicKey;
     private final EventBus broadcastEventBus;
 
-    private final Stack<DrugBarrel> drugBarrels;
+    private final Stack<DrugSachet> drugSachets;
 
     public GangBase(int id) {
         super(id);
         broadcastEventBus=new EventBus();
-        drugBarrels=new Stack<>();
-        for(int i=0;i<20;i++){
-            drugBarrels.push(new DrugBarrel());
+        drugSachets =new Stack<>();
+
+        for(int i=0;i<15000;i++){
+            drugSachets.push(new DrugSachet());
         }
     }
     @Subscribe
     public void receiveRequest(DrugsRequestEvent drugsRequestEvent){
-
         String requestMessage=drugsRequestEvent.getRequestMessage();
-        System.out.println("request received: "+requestMessage);
+        int gangID= WordToNumber.convert(requestMessage.split("X")[1]);
 
-        broadcast(encryptRequestMessage(requestMessage));
-        broadcastEventBus.post(new ReceiveDrugsEvent(sendDrugs(drugsRequestEvent.getNumberOfDrugBarrels())));
+        System.out.println("BASE -- request received from GANG (id "+gangID+"): "+requestMessage);
+
+        //  broadcasting encrypted request message
+        broadcastRequest(encryptRequestMessage(requestMessage));
+
+        // sending 100 drug sachets as requested
+        broadcastEventBus.post(new ReceiveDrugsEvent(sendDrugs(100),gangID));
+
+        String broadcastDrugsTransactionMessage="DRUGS"+"X"+"ONE"+"HUNDRED"+"X"+"SEND"+"X"+"TO"+"Y"+"LOCATION"+"X"+NumberToWords.convert(gangID);
+        broadcastDrugsTransaction(broadcastDrugsTransactionMessage);
 
     }
 
 
 
-    public void broadcast(String broadcastMessage){
+    public void broadcastRequest(String broadcastMessage){
         broadcastEventBus.post(new BroadcastEvent(broadcastMessage));
     }
 
+    public void broadcastDrugsTransaction(String broadcastDrugsTransactionMessage){
+        broadcastEventBus.post(new BroadcastDrugsTransactionEvent(broadcastDrugsTransactionMessage));
+    }
+
     public String encryptRequestMessage(String requestMessage){
+
         /*
 
         encryption of request message goes here
@@ -48,13 +63,13 @@ public class GangBase extends Subscriber{
         return "encryptedMessage";
     }
 
-    public List<DrugBarrel> sendDrugs(int numberOfBarrels){
+    public List<DrugSachet> sendDrugs(int numberOfSachets){
 
-        List<DrugBarrel> requestDrugBarrels=new ArrayList<>();
+        List<DrugSachet> requestDrugSachets =new ArrayList<>();
 
-        for(int i=0;i<numberOfBarrels;i++){
-            if(!drugBarrels.isEmpty()){
-                requestDrugBarrels.add(drugBarrels.pop());
+        for(int i=0;i<numberOfSachets;i++){
+            if(!drugSachets.isEmpty()){
+                requestDrugSachets.add(drugSachets.pop());
             }
             else {
                 System.out.println("drugs out of stock :(...");
@@ -62,7 +77,7 @@ public class GangBase extends Subscriber{
 
         }
 
-        return requestDrugBarrels;
+        return requestDrugSachets;
     }
 
     public void addSubscriber(Subscriber subscriber){

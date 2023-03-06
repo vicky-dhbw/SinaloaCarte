@@ -6,4 +6,8 @@ public abstract class Subscriber {
     public Subscriber(int id) {
         this.id = id;
     }
+
+    public int getID(){
+        return id;
+    }
 }
