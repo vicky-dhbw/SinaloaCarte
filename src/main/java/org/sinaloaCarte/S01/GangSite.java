@@ -46,6 +46,7 @@ public class GangSite extends Subscriber{
         /*
 
         Decryption here
+
          */
     }
     public String getPrivateKey() {
