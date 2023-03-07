@@ -1,4 +1,4 @@
-package org.sinaloaCarte.S01;
+package org.sinaloaCarte.S01_S02;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -18,15 +18,11 @@ public class GangBase extends Subscriber{
 
     private PublicKey publicKey;
     private final EventBus broadcastEventBus;
-    //private static KeyPair keyPair;
     private final Stack<DrugSachet> drugSachets;
 
     public GangBase(int id, PublicKey publicKey) throws NoSuchAlgorithmException {
         super(id);
         this.publicKey = publicKey;
-//        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-//        keyGen.initialize(2048); // Verwende einen RSA-Schlüssel mit 2048 Bits
-//        this.keyPair = keyGen.generateKeyPair();
 
         broadcastEventBus=new EventBus();
         drugSachets =new Stack<>();
@@ -63,7 +59,7 @@ public class GangBase extends Subscriber{
         broadcastEventBus.post(new BroadcastDrugsTransactionEvent(broadcastDrugsTransactionMessage));
     }
 
-    public byte[] encryptRequestMessage(String requestMessage) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, Exception {
+    public byte[] encryptRequestMessage(String requestMessage) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, Exception, NumberFormatException {
 
         // get a PublicKey instance
         byte[] messageBytes = requestMessage.getBytes("UTF-8");
@@ -79,7 +75,6 @@ public class GangBase extends Subscriber{
     }
 
     public PublicKey getPublicKey() {
-        //this.publicKey = keyPair.getPublic();
         return publicKey;
     }
 

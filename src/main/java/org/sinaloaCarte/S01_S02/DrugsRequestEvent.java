@@ -1,6 +1,4 @@
-package org.sinaloaCarte.S01;
-
-import org.sinaloaCarte.utils.WordToNumber;
+package org.sinaloaCarte.S01_S02;
 
 public class DrugsRequestEvent {
 

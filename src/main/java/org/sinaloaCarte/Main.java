@@ -1,18 +1,16 @@
 package org.sinaloaCarte;
 
-import org.sinaloaCarte.S01.GangBase;
-import org.sinaloaCarte.S01.GangSite;
-import org.sinaloaCarte.S01.MSA;
-import java.math.BigInteger;
+import org.sinaloaCarte.S01_S02.GangBase;
+import org.sinaloaCarte.S01_S02.GangSite;
+import org.sinaloaCarte.S01_S02.MSA;
 import java.security.*;
 
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException {
-//        BigInteger modulus = new BigInteger("1234567890abcdef", 16);
-//        BigInteger exponent = new BigInteger("010001", 16);
+
         KeyPair keyPair;
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-        keyGen.initialize(2048); // Verwende einen RSA-Schlüssel mit 2048 Bits
+        keyGen.initialize(2048); // Key with 2048 Bits
         keyPair = keyGen.generateKeyPair();
 
 
@@ -41,6 +39,6 @@ public class Main {
         }
 
 
-       // msa.seizeDrugsFromGang(1);
+       msa.seizeDrugsFromGang(1);
     }
 }

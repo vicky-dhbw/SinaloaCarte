@@ -1,4 +1,4 @@
-package org.sinaloaCarte.S01;
+package org.sinaloaCarte.S01_S02;
 
 import com.google.common.eventbus.Subscribe;
 import org.sinaloaCarte.S03.RSACracker;
@@ -51,12 +51,6 @@ public class MSA extends Subscriber{
                break;
             }
         }
-        /*
-        Cryptographic analysis here
-
-        find out gangID
-
-        */
     }
 
     public void seizeDrugsFromGang(int gangID){

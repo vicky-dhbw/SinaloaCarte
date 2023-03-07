@@ -1,4 +1,4 @@
-package org.sinaloaCarte.S01;
+package org.sinaloaCarte.S01_S02;
 
 import java.util.List;
 
