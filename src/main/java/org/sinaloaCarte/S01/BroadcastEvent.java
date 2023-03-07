@@ -2,8 +2,8 @@ package org.sinaloaCarte.S01;
 
 public class BroadcastEvent {
 
-    private final String broadcastMessage;
-    public BroadcastEvent(String broadCastMessage){
+    private final byte[] broadcastMessage;
+    public BroadcastEvent(byte[] broadCastMessage){
         this.broadcastMessage=broadCastMessage;
     }
 

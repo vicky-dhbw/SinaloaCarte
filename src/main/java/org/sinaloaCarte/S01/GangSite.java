@@ -5,9 +5,17 @@ import com.google.common.eventbus.Subscribe;
 import org.sinaloaCarte.utils.NumberToWords;
 import org.sinaloaCarte.utils.WordToNumber;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
@@ -17,21 +25,22 @@ import java.util.List;
 
 public class GangSite extends Subscriber{
 
-    private String privateKey;
+    private PrivateKey privateKey;
     private final EventBus requestEventBus;
     private final List<DrugSachet> receivedDrugSachets;
     private final List<String> broadcastRequestsProtocols;
     private final List<String> broadcastDrugsTransactionsProtocols;
-    public GangSite(int id) {
+    public GangSite(int id, PrivateKey privateKey) throws NoSuchAlgorithmException {
         super(id);
+        this.privateKey = privateKey;
         requestEventBus=new EventBus();
         receivedDrugSachets =new ArrayList<>();
         broadcastRequestsProtocols =new ArrayList<>();
         broadcastDrugsTransactionsProtocols=new ArrayList<>();
     }
     @Subscribe
-    public void receiveBroadcast(BroadcastEvent broadcastEvent){
-        String broadcastMessage=broadcastEvent.getBroadcastMessage();
+    public void receiveBroadcast(BroadcastEvent broadcastEvent) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, BadPaddingException, InvalidKeyException {
+        byte[] broadcastMessage=broadcastEvent.getBroadcastMessage();
         System.out.println("GANG (id "+id+") received broadcast message -> "+broadcastMessage+" <- from gang base....");
 
         decryptBroadcastMessage(broadcastMessage);
@@ -55,17 +64,21 @@ public class GangSite extends Subscriber{
         }
     }
 
-    public void decryptBroadcastMessage(String broadcastMessage){
+    public void decryptBroadcastMessage(byte[] broadcastMessage) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidKeyException {
 
-        String decryptedBroadcastMessage="LOCATIONXONEXREQUESTXONEHUNDREDX"; // <---- this is an example, decrypt the broadcast message and set it to this variable
-        // improper decryption leads to index out of bound array
+       // String decryptedBroadcastMessage="LOCATIONXONEXREQUESTXONEHUNDREDX"; // <---- this is an example, decrypt the broadcast message and set it to this variable
+         //improper decryption leads to index out of bound array
 
-        String privateKey = getPrivateKey();
-        
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, getPrivateKey());
 
+         //decrypt the text using the private key
+        //byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+       byte[] decryptedBytes = cipher.doFinal(broadcastMessage);
 
-        // protocol drug transaction
-
+         //Convert the decrypted bytes to a string
+        String decryptedBroadcastMessage = new String(decryptedBytes, "UTF-8");
+        System.out.println("GANG (id "+id+") decrypted broadcast message -> "+decryptedBroadcastMessage+" <- from gang base....");
         protocolBroadcastMessage(broadcastMessage,decryptedBroadcastMessage);
     }
 
@@ -85,12 +98,12 @@ public class GangSite extends Subscriber{
 
 
 
-    public String getPrivateKey() {
+    public PrivateKey getPrivateKey() {
         return privateKey;
     }
 
 
-    public void protocolBroadcastMessage(String broadcastMessage,String decryptedBroadcastMessage){
+    public void protocolBroadcastMessage(byte[] broadcastMessage,String decryptedBroadcastMessage){
         int location= WordToNumber.convert(decryptedBroadcastMessage.split("X")[1]);
         long currentTimeInNanos = System.nanoTime();
         broadcastRequestsProtocols.add(currentTimeInNanos+" | Location [Base "+location+"] | "+broadcastMessage+" | "+decryptedBroadcastMessage);
@@ -102,7 +115,7 @@ public class GangSite extends Subscriber{
         broadcastDrugsTransactionsProtocols.add(broadcastDrugsTransactionEvent.getDrugsTransactionMessage());
     }
 
-    public void setPrivateKey(String privateKey) {
+    public void setPrivateKey(PrivateKey privateKey) {
         this.privateKey = privateKey;
     }
     public List<DrugSachet> getReceivedDrugSachets() {

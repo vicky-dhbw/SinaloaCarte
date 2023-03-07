@@ -5,15 +5,10 @@ import com.google.common.eventbus.Subscribe;
 import org.sinaloaCarte.utils.NumberToWords;
 import org.sinaloaCarte.utils.WordToNumber;
 
-import java.math.BigInteger;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +16,18 @@ import java.util.Stack;
 
 public class GangBase extends Subscriber{
 
-    private String publicKey;
+    private PublicKey publicKey;
     private final EventBus broadcastEventBus;
-
+    //private static KeyPair keyPair;
     private final Stack<DrugSachet> drugSachets;
-    private BigInteger modulus;
-    private BigInteger exponent;
-    public GangBase(int id, BigInteger modulus, BigInteger exponent) {
+
+    public GangBase(int id, PublicKey publicKey) throws NoSuchAlgorithmException {
         super(id);
-        this.modulus = modulus;
-        this.exponent = exponent;
+        this.publicKey = publicKey;
+//        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+//        keyGen.initialize(2048); // Verwende einen RSA-Schlüssel mit 2048 Bits
+//        this.keyPair = keyGen.generateKeyPair();
+
         broadcastEventBus=new EventBus();
         drugSachets =new Stack<>();
 
@@ -46,7 +43,7 @@ public class GangBase extends Subscriber{
         System.out.println("BASE -- request received from GANG (id "+gangID+"): "+requestMessage);
 
         //  broadcasting encrypted request message
-        broadcastRequest(encryptRequestMessage(requestMessage, modulus, exponent));
+        broadcastRequest(encryptRequestMessage(requestMessage));
 
         // sending 100 drug sachets as requested
         broadcastEventBus.post(new ReceiveDrugsEvent(sendDrugs(100),gangID));
@@ -66,23 +63,32 @@ public class GangBase extends Subscriber{
         broadcastEventBus.post(new BroadcastDrugsTransactionEvent(broadcastDrugsTransactionMessage));
     }
 
-    public String encryptRequestMessage(String requestMessage, BigInteger modulus, BigInteger exponent) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, Exception {
+    public byte[] encryptRequestMessage(String requestMessage) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, Exception {
 
-        // Konvertiere die Public-Key-Komponenten in eine PublicKey-Instanz
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
+        // get a PublicKey instance
+        byte[] messageBytes = requestMessage.getBytes("UTF-8");
 
-        // Erzeuge einen Cipher-Objekt und initialisiere es mit dem öffentlichen Schlüssel
+        // get an RSA cipher object
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
 
-        // Konvertiere die Nachricht in ein Byte-Array und verschlüssel es
-        byte[] requestBytes = requestMessage.getBytes("UTF-8");
-        byte[] encryptedBytes = cipher.doFinal(requestBytes);
+        // encrypt the message  using the public key
+        byte[] encryptedBytes = cipher.doFinal(messageBytes);
 
-        return encryptedBytes.toString();
+        return encryptedBytes;
     }
+
+    public PublicKey getPublicKey() {
+        //this.publicKey = keyPair.getPublic();
+        return publicKey;
+    }
+
+
+
+
+
+
+
 
     public List<DrugSachet> sendDrugs(int numberOfSachets){
 
@@ -104,13 +110,11 @@ public class GangBase extends Subscriber{
     public void addSubscriber(Subscriber subscriber){
         broadcastEventBus.register(subscriber);
     }
-    public String getPublicKey() {
-        return publicKey;
-    }
 
-    public void setPublicKey(String publicKey) {
+
+
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
-
 
 }

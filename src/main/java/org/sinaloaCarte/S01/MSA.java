@@ -17,7 +17,7 @@ public class MSA extends Subscriber{
 
     @Subscribe
     public void receiveBroadcast(BroadcastEvent broadcastEvent){
-        String broadcastMessage=broadcastEvent.getBroadcastMessage();
+        String broadcastMessage=broadcastEvent.getBroadcastMessage().toString();
         System.out.println("MSA gets encrypted message: "+broadcastMessage);
         decryptBroadcastMessage(broadcastMessage);
     }
