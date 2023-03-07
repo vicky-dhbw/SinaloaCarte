@@ -30,33 +30,16 @@ public class Main {
         for (int i = 0; i < 20; i++) {
             sites[i].addSubscriber(base);
             base.addSubscriber(sites[i]);
+            sites[i].requestDrugs();
         }
 
         base.addSubscriber(msa);
 
 
 
-            sites[0].requestDrugs();
-            sites[1].requestDrugs();
-            sites[2].requestDrugs();
-            sites[3].requestDrugs();
-            sites[4].requestDrugs();
-            sites[5].requestDrugs();
-            sites[6].requestDrugs();
-            sites[7].requestDrugs();
-            sites[8].requestDrugs();
-            sites[9].requestDrugs();
-            sites[10].requestDrugs();
-            sites[11].requestDrugs();
-            sites[12].requestDrugs();
-            sites[13].requestDrugs();
-            sites[14].requestDrugs();
-            sites[15].requestDrugs();
-            sites[16].requestDrugs();
-            sites[17].requestDrugs();
-            sites[18].requestDrugs();
-            sites[19].requestDrugs();
-
+        for (int i = 0; i < 20; i++) {
+            sites[i].requestDrugs();
+        }
 
 
 
