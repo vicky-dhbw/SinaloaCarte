@@ -55,7 +55,7 @@ public class GangBase extends Subscriber{
 
 
 
-    public void broadcastRequest(String broadcastMessage){
+    public void broadcastRequest(byte[] broadcastMessage){
         broadcastEventBus.post(new BroadcastEvent(broadcastMessage));
     }
 

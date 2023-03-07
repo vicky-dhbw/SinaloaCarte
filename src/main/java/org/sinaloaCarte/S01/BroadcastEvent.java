@@ -7,7 +7,7 @@ public class BroadcastEvent {
         this.broadcastMessage=broadCastMessage;
     }
 
-    public String getBroadcastMessage() {
+    public byte[] getBroadcastMessage() {
         return broadcastMessage;
     }
 }
