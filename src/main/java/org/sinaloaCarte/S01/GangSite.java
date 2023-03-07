@@ -5,7 +5,14 @@ import com.google.common.eventbus.Subscribe;
 import org.sinaloaCarte.utils.NumberToWords;
 import org.sinaloaCarte.utils.WordToNumber;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class GangSite extends Subscriber{
@@ -52,25 +59,42 @@ public class GangSite extends Subscriber{
 
         String decryptedBroadcastMessage="LOCATIONXONEXREQUESTXONEHUNDREDX"; // <---- this is an example, decrypt the broadcast message and set it to this variable
         // improper decryption leads to index out of bound array
-        /*
 
-        Decryption here
+        String privateKey = getPrivateKey();
+        
 
-         */
 
         // protocol drug transaction
 
         protocolBroadcastMessage(broadcastMessage,decryptedBroadcastMessage);
     }
 
+
+//    private RSAPrivateKey getPrivateKey() throws Exception {
+//        // Parse the private key string to get the modulus and exponent
+//        String[] privateKeyParts = privateKey.split(",");
+//        BigInteger modulus = new BigInteger(privateKeyParts[0]);
+//        BigInteger exponent = new BigInteger(privateKeyParts[1]);
+//
+//        // Generate the private key object
+//        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(modulus, exponent);
+//        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+//        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+//    }
+
+
+
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+
     public void protocolBroadcastMessage(String broadcastMessage,String decryptedBroadcastMessage){
         int location= WordToNumber.convert(decryptedBroadcastMessage.split("X")[1]);
         long currentTimeInNanos = System.nanoTime();
         broadcastRequestsProtocols.add(currentTimeInNanos+" | Location [Base "+location+"] | "+broadcastMessage+" | "+decryptedBroadcastMessage);
 
-    }
-    public String getPrivateKey() {
-        return privateKey;
     }
 
     @Subscribe
