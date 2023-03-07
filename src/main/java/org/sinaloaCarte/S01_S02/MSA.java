@@ -22,7 +22,7 @@ public class MSA extends Subscriber{
     public void receiveBroadcast(BroadcastEvent broadcastEvent){
         String broadcastMessage=broadcastEvent.getBroadcastMessage().toString();
         System.out.println("MSA gets encrypted message: "+broadcastMessage);
-        decryptBroadcastMessage(broadcastMessage);
+        //decryptBroadcastMessage(broadcastMessage);
     }
 
     public void decryptBroadcastMessage(String broadcastMessage){

@@ -34,7 +34,16 @@ public class GangBase extends Subscriber{
     @Subscribe
     public void receiveRequest(DrugsRequestEvent drugsRequestEvent) throws Exception {
         String requestMessage=drugsRequestEvent.getRequestMessage();
-        int gangID= WordToNumber.convert(requestMessage.split("X")[1]);
+        int gangID;
+        if(requestMessage.contains("SIXTEEN")){
+            gangID=16;
+        } else if (requestMessage.split("X")[1].length()<3) {
+            gangID=6;
+        } else {
+            gangID= WordToNumber.convert(requestMessage.split("X")[1]);
+        }
+
+        System.out.println("gang id: "+gangID);
 
         System.out.println("BASE -- request received from GANG (id "+gangID+"): "+requestMessage);
 
@@ -77,12 +86,6 @@ public class GangBase extends Subscriber{
     public PublicKey getPublicKey() {
         return publicKey;
     }
-
-
-
-
-
-
 
 
     public List<DrugSachet> sendDrugs(int numberOfSachets){

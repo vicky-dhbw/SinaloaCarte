@@ -83,7 +83,14 @@ public class GangSite extends Subscriber {
 
 
     public void protocolBroadcastMessage(byte[] broadcastMessage, String decryptedBroadcastMessage) {
-        int location = WordToNumber.convert(decryptedBroadcastMessage.split("X")[1]);
+        int location;
+        if(decryptedBroadcastMessage.contains("SIXTEEN")){
+            location=16;
+        } else if (decryptedBroadcastMessage.split("X")[1].length()<3) {
+            location=6;
+        } else {
+            location= WordToNumber.convert(decryptedBroadcastMessage.split("X")[1]);
+        }
         long currentTimeInNanos = System.nanoTime();
         broadcastRequestsProtocols.add(currentTimeInNanos + " | Location [Base " + location + "] | " + broadcastMessage + " | " + decryptedBroadcastMessage);
 
